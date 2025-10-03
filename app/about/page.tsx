@@ -107,7 +107,7 @@ export default function SobrePage() {
           </h2>
           <p className="text-gray-600 leading-relaxed">
             Desarrollado como parte del curso de <strong>Ingeniería Web</strong>{" "}
-            en la EIA Universidad. Este proyecto demuestra el uso de Next.js 14
+            en la Universidad EIA. Este proyecto demuestra el uso de Next.js 14
             con App Router, TypeScript, Tailwind CSS, y manejo de APIs externas.
           </p>
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
