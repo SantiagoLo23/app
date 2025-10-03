@@ -15,6 +15,7 @@ interface CurrentWeatherProps {
   temperature: number;
   humidity: number;
   weathercode: number;
+  apparentTemperature?: number;
 }
 
 export default function CurrentWeather({
@@ -22,6 +23,7 @@ export default function CurrentWeather({
   temperature,
   humidity,
   weathercode,
+  apparentTemperature,
 }: CurrentWeatherProps) {
   const [favorite, setFavorite] = useState(false);
 
@@ -85,15 +87,20 @@ export default function CurrentWeather({
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="flex items-center gap-2 justify-end mb-2">
+        <div className="text-right space-y-3">
+          <div className="flex items-center gap-2 justify-end">
             <Droplets size={20} />
             <span className="text-lg">Humedad: {humidity}%</span>
           </div>
-          <div className="flex items-center gap-2 justify-end">
-            <Thermometer size={20} />
-            <span className="text-lg">Sensación térmica</span>
-          </div>
+          {}
+          {apparentTemperature !== undefined && (
+            <div className="flex items-center gap-2 justify-end">
+              <Thermometer size={20} />
+              <span className="text-lg">
+                Sensación: {Math.round(apparentTemperature)}°C
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

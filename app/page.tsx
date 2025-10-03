@@ -74,7 +74,6 @@ export default function Home() {
   };
 
   const handleCitySelect = async (city: City) => {
-    // ✅ Asegurar que la ciudad tenga el ID correcto
     const cityWithId = {
       ...city,
       id: generateCityId(city.latitude, city.longitude),
@@ -110,8 +109,11 @@ export default function Home() {
           <CurrentWeather
             city={selectedCity}
             temperature={weatherData.current_weather.temperature}
-            humidity={weatherData.hourly.relativehumidity_2m[0]}
+            humidity={weatherData.current_weather.humidity}
             weathercode={weatherData.current_weather.weathercode}
+            apparentTemperature={
+              weatherData.current_weather.apparent_temperature
+            }
           />
 
           <ForecastTable forecast={weatherData.hourly} />
