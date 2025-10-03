@@ -1,26 +1,48 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { City, WeatherData } from "@/types/weather";
 import { getWeatherForecast } from "@/lib/api/weather";
 import CitySearch from "@/components/CitySearch";
 import CurrentWeather from "@/components/CurrentWeather";
 import ForecastTable from "@/components/ForecastTable";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import { Cloud } from "lucide-react";
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCitySelect = async (city: City) => {
-    setSelectedCity(city);
+  useEffect(() => {
+    const cityName = searchParams.get("city");
+    const country = searchParams.get("country");
+    const lat = searchParams.get("lat");
+    const lon = searchParams.get("lon");
+
+    if (cityName && lat && lon) {
+      const cityFromUrl: City = {
+        id: Date.now(),
+        name: cityName,
+        country: country || "",
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lon),
+      };
+
+      setSelectedCity(cityFromUrl);
+      loadWeather(parseFloat(lat), parseFloat(lon));
+    }
+  }, [searchParams]);
+
+  const loadWeather = async (latitude: number, longitude: number) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const data = await getWeatherForecast(city.latitude, city.longitude);
+      const data = await getWeatherForecast(latitude, longitude);
 
       if (!data) {
         setError(
@@ -36,6 +58,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCitySelect = async (city: City) => {
+    setSelectedCity(city);
+    await loadWeather(city.latitude, city.longitude);
   };
 
   return (
@@ -55,6 +82,8 @@ export default function Home() {
       <div className="mb-8">
         <CitySearch onCitySelect={handleCitySelect} />
       </div>
+
+      {isLoading && <LoadingSpinner />}
 
       {error && <ErrorMessage message={error} />}
 

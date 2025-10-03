@@ -19,12 +19,13 @@ export default function FavoritosPage() {
   };
 
   const handleViewWeather = (city: FavoriteCity) => {
-    // Redirigir al home y pasar datos mediante query params
-    router.push(
-      `/?city=${encodeURIComponent(city.name)}&lat=${city.latitude}&lon=${
-        city.longitude
-      }`
-    );
+    const params = new URLSearchParams({
+      city: city.name,
+      country: city.country,
+      lat: city.latitude.toString(),
+      lon: city.longitude.toString(),
+    });
+    router.push(`/?${params.toString()}`);
   };
 
   return (
