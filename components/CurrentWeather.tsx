@@ -2,8 +2,13 @@
 import { City } from "@/types/weather";
 import { getWeatherDescription, getWeatherIcon } from "@/lib/weatherCodes";
 import { MapPin, Droplets, Thermometer, Heart } from "lucide-react";
-import { addFavorite, removeFavorite, isFavorite } from "@/lib/favorites";
-import { useState } from "react";
+import {
+  addFavorite,
+  removeFavorite,
+  isFavorite,
+  generateCityId,
+} from "@/lib/favorites";
+import { useState, useEffect } from "react";
 
 interface CurrentWeatherProps {
   city: City;
@@ -18,15 +23,22 @@ export default function CurrentWeather({
   humidity,
   weathercode,
 }: CurrentWeatherProps) {
-  const [favorite, setFavorite] = useState(isFavorite(city.id));
+  const [favorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    const correctId = generateCityId(city.latitude, city.longitude);
+    setFavorite(isFavorite(correctId));
+  }, [city.latitude, city.longitude]);
 
   const handleToggleFavorite = () => {
+    const correctId = generateCityId(city.latitude, city.longitude);
+
     if (favorite) {
-      removeFavorite(city.id);
+      removeFavorite(correctId);
       setFavorite(false);
     } else {
       addFavorite({
-        id: city.id,
+        id: correctId,
         name: city.name,
         country: city.country,
         latitude: city.latitude,

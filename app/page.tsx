@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { City, WeatherData } from "@/types/weather";
 import { getWeatherForecast } from "@/lib/api/weather";
+import { generateCityId } from "@/lib/favorites";
 import CitySearch from "@/components/CitySearch";
 import CurrentWeather from "@/components/CurrentWeather";
 import ForecastTable from "@/components/ForecastTable";
@@ -18,22 +19,34 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const hasParams = searchParams.toString().length > 0;
+
+    if (!hasParams && selectedCity) {
+      setSelectedCity(null);
+      setWeatherData(null);
+      setError(null);
+      return;
+    }
+
     const cityName = searchParams.get("city");
     const country = searchParams.get("country");
     const lat = searchParams.get("lat");
     const lon = searchParams.get("lon");
 
     if (cityName && lat && lon) {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lon);
+
       const cityFromUrl: City = {
-        id: Date.now(),
+        id: generateCityId(latitude, longitude),
         name: cityName,
         country: country || "",
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lon),
+        latitude: latitude,
+        longitude: longitude,
       };
 
       setSelectedCity(cityFromUrl);
-      loadWeather(parseFloat(lat), parseFloat(lon));
+      loadWeather(latitude, longitude);
     }
   }, [searchParams]);
 
@@ -61,7 +74,12 @@ export default function Home() {
   };
 
   const handleCitySelect = async (city: City) => {
-    setSelectedCity(city);
+    // ✅ Asegurar que la ciudad tenga el ID correcto
+    const cityWithId = {
+      ...city,
+      id: generateCityId(city.latitude, city.longitude),
+    };
+    setSelectedCity(cityWithId);
     await loadWeather(city.latitude, city.longitude);
   };
 

@@ -2,6 +2,12 @@ import { FavoriteCity } from "@/types/weather";
 
 const FAVORITES_KEY = "weather_favorites";
 
+export const generateCityId = (latitude: number, longitude: number): number => {
+  const latStr = latitude.toFixed(4).replace(".", "").replace("-", "9");
+  const lonStr = longitude.toFixed(4).replace(".", "").replace("-", "9");
+  return parseInt(latStr.slice(0, 5) + lonStr.slice(0, 5));
+};
+
 export const getFavorites = (): FavoriteCity[] => {
   if (typeof window === "undefined") return [];
 
