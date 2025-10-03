@@ -14,8 +14,14 @@ export default function CitySearch({ onCitySelect }: CitySearchProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const isSelectingRef = useRef(false);
 
   useEffect(() => {
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
+
     if (query.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -38,7 +44,7 @@ export default function CitySearch({ onCitySelect }: CitySearchProps) {
         console.error("Error al buscar ciudades:", error);
         setIsLoading(false);
       }
-    }, 300); // sebas el mejor, con tiempo de espera de 300ms
+    }, 300);
 
     return () => {
       if (debounceTimer.current) {
@@ -48,8 +54,10 @@ export default function CitySearch({ onCitySelect }: CitySearchProps) {
   }, [query]);
 
   const handleSelectCity = (city: City) => {
+    isSelectingRef.current = true;
     setQuery(`${city.name}, ${city.country}`);
     setShowSuggestions(false);
+    setSuggestions([]);
     onCitySelect(city);
   };
 
@@ -65,7 +73,7 @@ export default function CitySearch({ onCitySelect }: CitySearchProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar ciudad..."
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-400"
         />
         {isLoading && (
           <Loader2
