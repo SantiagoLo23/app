@@ -65,7 +65,7 @@ export default function Home() {
       } else {
         setWeatherData(data);
       }
-    } catch (err) {
+    } catch {
       setError("Ocurrió un error al consultar la API del clima.");
       setWeatherData(null);
     } finally {
